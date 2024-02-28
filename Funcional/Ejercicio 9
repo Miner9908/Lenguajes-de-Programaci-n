@@ -1,0 +1,11 @@
+; Ejercicio 9
+(define (eliminar_elemento E L); Recibe el elemento a eliminar y la lista
+  (define (filtrar elem) ; Función para filtrar los elementos diferentes a E
+    (not (equal? elem E)))
+  ; Utilizar map para aplicar la función filtrar a cada elemento de la lista L
+  ; y así eliminar el elemento E si está presente
+  (map (lambda (elem) elem) (filter filtrar L)))
+
+; Ejemplos de uso
+(displayln (eliminar_elemento 3 '(1 2 3 4 5))) 
+(displayln (eliminar_elemento 0 '(1 2 3 4 5))) 
