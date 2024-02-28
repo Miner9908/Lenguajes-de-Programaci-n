@@ -1,0 +1,20 @@
+; Ejercicio 6 recibe dos listas ordenadas y produce otra lista ordenada con todos los elementos de las primeras dos listas 
+(define (merge lista1 lista2)
+  (cond
+    
+    ((null? lista1) lista2)  ; Si la lista1 es vacía, devuelve la lista2
+    
+    ((null? lista2) lista1)  ; Si la lista2 es vacía, devuelve la lista1
+    
+    (else
+     ; Se comparan los primeros elementos de lista1 y lista2
+     (if (< (car lista1) (car lista2))
+         
+         ; Si el primer elemento de lista1 es menor, coloca el menor a la lista resultante y llama recursivamente a merge con el resto de lista1 y lista2
+         ;el mismo caso si el elemento de la lista2 es el menor nada mas que coloca primero los elementos de la lista2 y despues lo de la lista1
+         (cons (car lista1) (merge (cdr lista1) lista2))
+         (cons (car lista2) (merge lista1 (cdr lista2)))))))
+
+; Ejemplos de uso
+(displayln (merge '(1 2 3 4) '(5 6 7 8)))
+(displayln (merge '(1 2 3) '(1 2 3 4)))
