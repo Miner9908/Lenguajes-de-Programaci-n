@@ -1,0 +1,14 @@
+; Ejercicio 8
+(define (sub-conjunto? conj1 conj2); Recibe dos conjuntos como parametros
+    (cond
+       ((null? conj1) #t) ;Si el subconjunto es vacio, siempre pertenece al conjunto
+      ; Verifica si el primer elemento de conj1 está presente en conj2, continuar verificando el resto de conj1
+      ((member (car conj1) conj2) (sub-conjunto? (cdr conj1) conj2))
+      ; En caso contrario, entonces no es un subconjunto
+      (else #f)))
+
+
+; Ejemplos de uso
+(displayln (sub-conjunto? '() '(a b c d e f)))      
+(displayln (sub-conjunto? '(a b c) '(a b c d e f))) 
+(displayln (sub-conjunto? '(a b x) '(a b c d e f)))
