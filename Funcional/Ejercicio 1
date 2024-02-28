@@ -1,0 +1,13 @@
+;Ejercicio 1
+;Cap = capital    I=interes    N=numemro de años 
+(define (resultado Cap I N)
+  (if (= N 0) Cap
+       (resultado (* Cap (+ 1 I)) I (- N 1))
+       )
+  )
+
+;Ejemplos del ejercicio
+(display (resultado 2000 0.10 0))(newline)
+(display (resultado 2000 0.10 1))(newline)
+(display (resultado 2000 0.10 2))(newline)
+(display (resultado 2000 0.10 3))(newline)
