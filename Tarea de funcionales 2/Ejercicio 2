@@ -1,0 +1,11 @@
+;Ejercicio 2
+;Se define la funcion para verificar si una cadena contiene una subcadena dada
+(define (contieneSubcadena? cadena subcadena)
+  (regexp-match? (regexp (string-append ".*" subcadena ".*")) cadena))
+
+;Define la funcion para que devuelva solo las cadenas que contienen a la subcadena
+(define (sub_cadenas subcadena listaCadenas)
+  (filter (lambda (cadena) (contieneSubcadena? cadena subcadena)) listaCadenas))
+
+; Ejemplo de uso:
+(display (sub_cadenas "la" '("la casa" "el perro" "pintando la cerca")))
