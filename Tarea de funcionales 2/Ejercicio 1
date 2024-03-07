@@ -1,0 +1,41 @@
+;Se definen las facturas
+(define factura1 '(("Arroz" 8 1800)
+                         ("Azúcar" 6 1200)
+                         ("Café" 2 2800)
+                         ("Leche" 9 1200)))
+
+(define factura2 '(("Tomate" 4 800)
+                         ("Lechuga" 3 400)
+                         ("Pepino" 2 450 )))
+(define factura3 '((arroz 3 1800)
+                   (leche 1 1200)
+                   (fideos 6 600)))
+
+;Punto a: Calcular el impuesto de a factura 
+(define (ImpuestoTotal factura umbral)
+  (define (calcularImpuestoProducto producto)
+    (if (> (caddr producto) umbral)
+        (* 0.13 (caddr producto))
+        0))
+  (apply + (map calcularImpuestoProducto factura)))
+
+(displayln "Ejercicio 1 punto a) ")
+(displayln (ImpuestoTotal factura1 1200))
+(displayln (ImpuestoTotal factura2 1200))
+(displayln (ImpuestoTotal factura3 1200))
+
+;Punto b: Calcular el monto total de la factura sin impuesto
+
+(define (calcularMontoTotal factura)
+  (define (calcularSubtotal producto)
+    (* (cadr producto) (caddr producto)))
+  
+  (let loop ((factura factura)
+             (total 0))
+    (if (null? factura)
+        total
+        (loop (cdr factura) (+ total (calcularSubtotal (car factura)))))))
+
+(displayln (calcularMontoTotal factura2))
+(displayln (calcularMontoTotal factura2))
+(displayln (calcularMontoTotal factura3))
