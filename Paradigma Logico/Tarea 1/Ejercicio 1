@@ -1,0 +1,13 @@
+%Toda lista vacia es subconjunto de cualquier lista
+sub_conjunto([], _).
+
+%Verifica que los elementos de la lista A esten en B
+subconjunto([X|RestoA], B) :-
+	  pertenece(X,B),
+	  subconjunto(RestoA, B).
+
+%Verifica que x pertenesca a la lista
+pertenece(X, [X|_]).
+
+pertenece(X, [_|Resto]):-
+	  pertenece(X, Resto).
