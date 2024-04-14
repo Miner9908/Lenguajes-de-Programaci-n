@@ -1,0 +1,24 @@
+% Calcular la distancia de Hamming entre dos cadenas
+distanciaH(Cadena1, Cadena2, Distancia) :-
+    atom_chars(Cadena1, Lista1),         
+    atom_chars(Cadena2, Lista2),
+    longitudMinima(Lista1, Lista2, LongMin),
+    calcularDistancia(Lista1, Lista2, LongMin, 0, Distancia).
+
+% Calcular la longitud mínima entre dos listas
+longitudMinima([], _, 0). 
+longitudMinima(_, [], 0).  
+longitudMinima([_ | Cola1], [_ | Cola2], LongMin) :-
+    longitudMinima(Cola1, Cola2, LongMinCola), 
+    LongMin is LongMinCola + 1.            
+
+% Calcular la distancia de Hamming
+calcularDistancia(_, _, 0, Distancia, Distancia).
+calcularDistancia([Cabeza1 | Cola1], [Cabeza2 | Cola2], LongMin, DistanciaParcial, Distancia) :-
+    Cabeza1 \= Cabeza2,
+    NuevaDistancia is DistanciaParcial + 1,  % Incrementamos la distancia parcial
+    NuevaLongMin is LongMin - 1,             % Decrementamos la longitud mínima
+    calcularDistancia(Cola1, Cola2, NuevaLongMin, NuevaDistancia, Distancia).
+calcularDistancia([_ | Cola1], [_ | Cola2], LongMin, DistanciaParcial, Distancia) :-
+    NuevaLongMin is LongMin - 1,
+    calcularDistancia(Cola1, Cola2, NuevaLongMin, DistanciaParcial, Distancia).
