@@ -1,0 +1,65 @@
+%Tipo de plato, comida, calorias
+plato(entradas, guacamole, 200).
+plato(entradas, ensalada, 150).
+plato(entradas, consome, 300).
+plato(entradas, tostadas_caprese, 250).
+plato(carne, filete_de_cerdo, 400).
+plato(carne, pollo_al_horno, 280).
+plato(carne, carne_en_salsa, 320).
+plato(pescado, tilapia, 160).
+plato(pescado, salmon, 300).
+plato(pescado, trucha, 225).
+plato(postre, flan, 200).
+plato(postre, nueces_con_miel, 500).
+plato(postre, naranja_confitada, 450).
+plato(postre, flan_de_coco, 375).
+
+% Regla para calcular el total de calorías de una lista de platos
+calorias([], 0). % Caso base
+calorias([Plato|Resto], TotalCalorias) :-
+    plato(_, Plato, CaloriasPlato),
+    calorias(Resto, TotalResto),
+    TotalCalorias is CaloriasPlato + TotalResto.
+
+% Regla para generar combinaciones de comidas que no superen un máximo X de calorías y no repitan ningún elemento en su composición
+
+combinacion_de_comidas(Entrada, PlatoPrincipal, Postre, TotalCalorias, MaxCalorias) :-
+    plato(entradas, Entrada, CaloriasEntrada),
+    plato(_, PlatoPrincipal, CaloriasPlatoPrincipal),
+    plato(postre, Postre, CaloriasPostre),
+    TotalCalorias is CaloriasEntrada + CaloriasPlatoPrincipal + CaloriasPostre,
+    TotalCalorias =< MaxCalorias,
+    \+ repite_elemento(Entrada, PlatoPrincipal, Postre).
+
+% Regla para verificar si hay algún elemento repetido en la combinación
+repite_elemento(Entrada, PlatoPrincipal, Postre) :-
+    plato(_, Entrada, _),
+    plato(_, PlatoPrincipal, _),
+    plato(_, Postre, _),
+    (Entrada = PlatoPrincipal ; Entrada = Postre ; PlatoPrincipal = Postre).
+
+
+
+% Regla final que consulta las primeras 5 combinaciones de comidas que cumplen con los criterios
+consultar_combinaciones(MaxCalorias) :-
+    findall((Entrada, PlatoPrincipal, Postre, TotalCalorias),
+            combinacion_de_comidas(Entrada, PlatoPrincipal, Postre, TotalCalorias, MaxCalorias),
+            Combinaciones),
+    length(Combinaciones, NumeroCombinaciones),
+    NumeroCombinaciones >= 5,
+    imprimir_primeras_5(Combinaciones).
+
+% Predicado para imprimir las primeras 5 combinaciones de comidas
+imprimir_primeras_5(Combinaciones) :-
+    imprimir(Combinaciones, 5).
+
+% Predicado para imprimir los primeros N elementos de una lista
+imprimir(_, 0) :- !.
+imprimir([Combinacion|Resto], N) :-
+    writeln(Combinacion),
+    N1 is N - 1,
+    imprimir(Resto, N1).
+
+
+
+%caso de uso: consultar_combinaciones(1000).
