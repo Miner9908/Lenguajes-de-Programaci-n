@@ -1,0 +1,170 @@
+import (
+	"fmt"
+	_ "fmt"
+	"sort"
+	"strings"
+)
+
+// Definición del tipo infoCliente
+type infoCliente struct {
+	nombre string
+	correo string
+	edad   int32
+}
+
+// Definición del tipo listaClientes
+type listaClientes []infoCliente
+
+// Función para agregar un cliente a la lista
+func (lc *listaClientes) agregarCliente(nombre, correo string, edad int32) {
+	cliente := infoCliente{nombre, correo, edad}
+	*lc = append(*lc, cliente)
+}
+
+// Función filter1 genérica
+func filter[T any](list []T, f func(T) bool) []T {
+	filtered := make([]T, 0)
+
+	for _, element := range list {
+		if f(element) {
+			filtered = append(filtered, element)
+		}
+	}
+	return filtered
+}
+
+// Función map2 mapea una lista de elementos a otro tipo de elementos utilizando una función de mapeo.
+func map2[T any, R any](list []T, f func(T) R) []R {
+	mapped := make([]R, len(list))
+
+	for i, e := range list {
+		mapped[i] = f(e)
+	}
+	return mapped
+}
+func reduce[T any, R any](list []T, init R, f func(R, T) R) R {
+	result := init
+
+	for _, element := range list {
+		result = f(result, element)
+	}
+
+	return result
+}
+
+// Función para filtrar clientes cuyo correo contenga el apellido de la persona
+func listaClientes_ApellidoEnCorreo(clientes *listaClientes) listaClientes {
+
+	return filter(*clientes, func(cliente infoCliente) bool {
+		nombreParts := strings.Split(cliente.nombre, " ")
+		apellido := nombreParts[len(nombreParts)-1]
+		apellido = strings.ToLower(apellido)
+		return strings.Contains(strings.ToLower(cliente.correo), apellido)
+	})
+}
+
+// Función para contar la cantidad de correos de Costa Rica
+func cantidadCorreosCostaRica(clientes *listaClientes) int {
+
+	correosCR := filter(*clientes, func(cliente infoCliente) bool {
+		correo := cliente.correo
+
+		return len(correo) >= 3 && correo[len(correo)-3:] == ".cr"
+
+	})
+
+	cantidadCorreos := map2(correosCR, func(c infoCliente) int {
+		return 1
+	})
+
+	return reduce(cantidadCorreos, 0, func(acc, val int) int {
+		return acc + val
+	})
+
+}
+
+// Función sugerenciasCorreos genera una sugerencia de correo para un cliente basado en su nombre y correo actual.
+func sugerenciasCorreos(nombre, correo string) string {
+	parts := strings.Split(correo, "@")
+	nombreParts := strings.Split(strings.ToLower(nombre), " ")
+	nombreCliente := nombreParts[0]
+	apellido := nombreParts[len(nombreParts)-1]
+	dominio := parts[1]
+	return nombreCliente + "." + apellido + "@" + dominio
+}
+
+// Función clientesSugerenciasCorreos genera sugerencias de correos para los clientes cuyos correos no contienen su nombre.
+func clientesSugerenciasCorreos(lista *listaClientes) listaClientes {
+	return map2(*lista, func(c infoCliente) infoCliente {
+		if !strings.Contains(strings.ToLower(c.correo), strings.Replace(strings.ToLower(c.nombre), " ", "", -1)) {
+			// Si el correo no contiene el nombre, se cambia por la sugerencia
+			return infoCliente{c.nombre, sugerenciasCorreos(c.nombre, c.correo), c.edad}
+		}
+		// Si el correo ya contiene el nombre, se deja igual
+		return c
+	})
+}
+
+// Función correosOrdenadosAlfabeticos devuelve una lista de correos de clientes ordenados alfabéticamente.
+func correosOrdenadosAlfabeticos(lista *listaClientes) []string {
+	correos := make([]string, len(*lista))
+
+	// Obtener todos los correos de la lista de clientes
+	for i, cliente := range *lista {
+		correos[i] = cliente.correo
+	}
+
+	// Ordenar los correos alfabéticamente
+	sort.Strings(correos)
+
+	return correos
+}
+func main() {
+
+	var listaClientes listaClientes
+
+	listaClientes.agregarCliente("Oscar Viquez", "oviquez@tec.ac.cr", 44)
+	listaClientes.agregarCliente("Pedro Perez", "elsegundo@gmail.com", 30)
+	listaClientes.agregarCliente("Maria Lopez", "mlopez@hotmail.com", 18)
+	listaClientes.agregarCliente("Juan Rodriguez", "jrodriguez@gmail.com", 25)
+	listaClientes.agregarCliente("Luisa Gonzalez", "muyseguro@tec.ac.cr", 67)
+	listaClientes.agregarCliente("Marco Rojas", "loquesea@hotmail.com", 47)
+	listaClientes.agregarCliente("Marta Saborio", "msaborio@gmail.com", 33)
+	listaClientes.agregarCliente("Camila Segura", "csegura@ice.co.cr", 19)
+	listaClientes.agregarCliente("Fernando Rojas", "frojas@estado.gov", 27)
+	listaClientes.agregarCliente("Rosa Ramirez", "risuenna@gmail.com", 50)
+
+	// Filtrar clientes cuyo correo contenga el apellido de la persona
+	resultado := listaClientes_ApellidoEnCorreo(&listaClientes)
+
+	// Imprimir resultado
+	fmt.Println("Clientes cuyo correo contiene su apellido:")
+	for _, cliente := range resultado {
+		fmt.Printf("Nombre: %s, Correo: %s, Edad: %d\n", cliente.nombre, cliente.correo, cliente.edad)
+	}
+
+	// Calcular la cantidad de correos de Costa Rica
+	cantidad := cantidadCorreosCostaRica(&listaClientes)
+
+	// Imprimir resultado
+	fmt.Printf("Cantidad de correos de Costa Rica: %d\n", cantidad)
+
+	// Obtener lista de clientes con correos sugeridos
+	clientesConSugerencias := clientesSugerenciasCorreos(&listaClientes)
+
+	// Mostrar lista de clientes con sugerencias de correos electrónicos
+	fmt.Println("Lista de clientes con sugerencias de correos electrónicos:")
+	for _, cliente := range clientesConSugerencias {
+		fmt.Printf("Nombre: %s, Correo: %s, Edad: %d\n", cliente.nombre, cliente.correo, cliente.edad)
+	}
+
+	// Llamar a la función para obtener los correos ordenados alfabéticamente
+	correosOrdenados := correosOrdenadosAlfabeticos(&listaClientes)
+
+	// Imprimir los correos ordenados alfabéticamente
+	fmt.Println("Correos electrónicos ordenados alfabéticamente:")
+	for _, correo := range correosOrdenados {
+		fmt.Println(correo)
+	}
+
+}
